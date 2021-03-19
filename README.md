@@ -2,7 +2,7 @@
 
 Inspired by this article
 
-https://mail.google.com/mail/u/0/#inbox/FMfcgxwLswDnDZZvQsSGqCpXgqNGTQbZ
+https://towardsdatascience.com/10-algorithms-to-solve-before-your-python-coding-interview-feb74fb9bc27
 
 ## 1. Reverse Integer
 Given an integer, return the integer with reversed digits.
