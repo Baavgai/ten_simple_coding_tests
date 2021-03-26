@@ -1,8 +1,8 @@
 # 10 Algorithms To Solve Before your Coding Interview
 
-Inspired by this article
+Forked from https://github.com/gambuzzi/ten_simple_coding_tests
 
-https://towardsdatascience.com/10-algorithms-to-solve-before-your-python-coding-interview-feb74fb9bc27
+To solve with javascript.
 
 ## 1. Reverse Integer
 Given an integer, return the integer with reversed digits.
@@ -12,13 +12,17 @@ Note: The integer could be either positive or negative.
 * `-231` => `-132`
 * `345` => `543`
 
+```javascript
+console.assert(solution(-231) === -132);
+console.assert(solution(345) === 543);
+```
 
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(n):
-    return f'-{str(n)[1:][::-1]}' if n<0 else str(n)[::-1]
+```javascript
+const solution = n =>
+    (n < 0 ? -1 : 1) * Number.parseInt(`${Math.abs(n)}`.split('').reduce((acc, x) => `${x}${acc}`));
 ```
 
 </details>
@@ -29,30 +33,25 @@ For a given sentence, return the average word length.
 
 Note: Remember to remove punctuation first.
 
+```javascript
+const sentence1 = "Hi all, my name is Tom...I am originally from Australia.";
+const sentence2 = "I need to work very hard to learn more about algorithms in Python!";
 
-```python
-sentence1 = "Hi all, my name is Tom...I am originally from Australia."
-sentence2 = "I need to work very hard to learn more about algorithms in Python!"
-
-assert solution(sentence1)==3.82
-assert solution(sentence2)==4.08
+console.assert(solution(sentence1) == 3.82);
+console.assert(solution(sentence2) == 4.08);
 ```
 
 <details>
 	<summary>Solution</summary>
 
-```python
-import re
-def solution(sentence):
-    def avg(iterable):
-        ret = 0
-        n = 0.0  # if using python 2 force to float
-        for x in iterable:
-            ret+=x
-            n+=1.0  # counting like this because `iterable` is a generator and generators has no `len` method
-        return ret/n  # if using python 2 remember to cast to float
-
-    return round(avg(map(len, re.findall(r'\w+', sentence))), 2)
+```javascript
+const solution = msg => {
+    const [ct,tot] = msg.split(/\W/)
+        .map(x => x.trim().length)
+        .filter(x => x > 0)
+        .reduce(([ct,tot], n) => ([ct + 1, tot + n]), [0,0]);
+    return Math.round(((tot / ct) + Number.EPSILON) * 100) / 100;
+};
 ```
 
 </details>
@@ -65,14 +64,7 @@ You must **not** use any built-in BigInteger library or convert the inputs to in
 <details>
 	<summary>Solution</summary>
 
-```python
-from functools import reduce  # only needed for python 3
-
-def solution(num1, num2):
-    n1 = reduce(lambda a, b: a*10+b-48, map(ord, num1), 0)
-    n2 = reduce(lambda a, b: a*10+b-48, map(ord, num2), 0)
-
-    return n1+n2
+```javascript
 ```
 
 </details>
@@ -87,19 +79,7 @@ If it doesn't exist, return -1.
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(s):
-    seen = [None]*256  # let's assume only ascii characters 0..255
-    for i, x in enumerate(s):
-        n = ord(x)
-        if seen[n] is None:
-            seen[n] = i
-        elif seen[n] is not False:
-            seen[n] = False
-    try:
-        return min(x for x in seen if x not in (False, None))
-    except ValueError:  # empty generator above
-        return -1
+```javascript
 ```
 
 </details>
@@ -113,15 +93,7 @@ The string will only contain lowercase characters a-z.
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(s):
-    if s[:len(s)//2+1] == s[:len(s)//2-1:-1]:
-        return True  # already a palindrome
-    for i in range(len(s)):
-        w = s[:i] + s[i+1:]
-        if w[:len(w)//2+1] == w[:len(w)//2-1:-1]:
-            return True
-    return False
+```javascript
 ```
 
 </details>
@@ -143,11 +115,7 @@ assert solution(C)
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(nums):
-    return all(a>=b for a, b in zip(nums, nums[1:])) or \
-           all(a<=b for a, b in zip(nums, nums[1:]))
-
+```javascript
 ```
 
 </details>
@@ -167,25 +135,7 @@ assert solution(array2) == [1, 7, 8, 10, 12, 4, 0, 0, 0, 0]
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(nums):  # NOT changing the input
-    ret = [x for x in nums if x!=0]
-    return ret + [0] * (len(nums)-len(ret))
-
-
-from collections import deque
-def solution_2(nums):  # changing the input (inplace)
-    zeros = deque()
-    for i in range(len(nums)):
-        x = nums[i]
-        if x==0:
-            zeros.append(i)
-        elif len(zeros)>0:
-            idx = zeros.popleft()
-            nums[idx] = x
-            nums[i] = 0
-            zeros.append(i)
-    return nums
+```javascript
 ```
 
 </details>
@@ -203,84 +153,11 @@ assert solution(array1) == [1, 1, 2, 3, 3, 3, 5, 5]
 <details>
 	<summary>Solution</summary>
 
-
-```python
-def solution(arr):
-    ret = []
-    for x in arr:
-        valid = valid if x is None else x
-        ret.append(valid)
-    return ret
-
+```javascript
 ```
 
 </details>
 
-<details>
-	<summary>Another solution</summary>
-
-```python
-
-def first_true(iter):
-	for x in iter:
-		if x is not None:
-			return x
-	raise ValueError("All the values are None")
-
-def solution(a):
-	return [first_true(x) for x in zip(*(([None] * i + a[:len(a)-i]) for i in range(len(a))))]
-```
-
-That can become even more obscure
-
-```python
-def solution(a):
-    return [
-        next(y for y in x if y is not None)
-        for x in zip(*(([None] * i + a[:len(a)-i]) for i in range(len(a))))
-	]
-
-```
-
-Basically I am creating a matrix and rotating it with `zip`. Then for each column (that now is a row), taking the first not `None` element.
-
-### Performances
-
-The first solution is the more readable and the fastest one.
-
-```python
->>> timeit.timeit('solution([1, None, 2, 3, None, None, 5, None])', '''
-def solution(arr):
-    ret = []
-    for x in arr:
-        valid = valid if x is None else x
-        ret.append(valid)
-    return ret
-''')
-0.6686493580054957
->>> timeit.timeit('solution([1, None, 2, 3, None, None, 5, None])', '''
-def first_true(iter):
-	for x in iter:
-		if x is not None:
-			return x
-	raise ValueError("All the values are None")
-
-def solution(a):
-	return [first_true(x) for x in zip(*(([None] * i + a[:len(a)-i]) for i in range(len(a))))]
-''')
-4.560916772999917
-
->>> timeit.timeit('solution([1, None, 2, 3, None, None, 5, None])', '''
-def solution(a):
-    return [
-        next(y for y in x if y is not None)
-        for x in zip(*(([None] * i + a[:len(a)-i]) for i in range(len(a))))
-	]	
-''')
-5.971725533992867
-```
-
-</details>
 
 ## 9. Matched & Mismatched Words
 
@@ -297,12 +174,7 @@ assert solution(sentence1, sentence2) == ({'We', 'to', 'heavy', 'The', 'storm', 
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(sentence1, sentence2):
-    set1 = set(sentence1.split())
-    set2 = set(sentence2.split())
-
-    return set1^set2, set1&set2
+```javascript
 ```
 </details>
 
@@ -321,16 +193,6 @@ assert solution(35) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
 <details>
 	<summary>Solution</summary>
 
-```python
-def solution(n):
-    primes = []
-    for num in range(2, n):
-        for p in primes:
-            if num % p == 0:
-                break
-        else:
-            primes.append(num)
-    return primes
+```javascript
 ```
-
 </details>
