@@ -1,13 +1,12 @@
-const solution = s => 
-    s.split('').findIndex((x, i, xs) => xs.indexOf(x, i + 1) ===-1);
-    // s.split('').map((x, i, xs) => ([x, i, xs.indexOf(x, i + 1)]));
+const solution = s => {
+    const m = s.split('').reduce((m, c, idx) => {
+        if (c in m) { m[c].ct += 1; } else { m[c] = { idx, ct: 1 }; }
+        return m;
+    }, {});
+    const found = Object.keys(m).filter(k => m[k].ct === 1).map(k => m[k].idx);
+    return found.length === 0 ? -1 : Math.min(...found);
+};
 
-
-console.log(solution('alphabet'))
-console.log(solution('barbados'))
-console.log(solution('crunchy'))
-// console.log(solution('xxxxx'))
-
-// start from index 2
-// console.log(beasts.indexOf('bison', 2));
-// expected output: 4
+[['alphabet',1], ['barbados',2], ['crunchy',1],['xxxxx',-1] ].forEach(([word, answer]) => {
+    console.assert(solution(word) === answer, word, answer);
+});
