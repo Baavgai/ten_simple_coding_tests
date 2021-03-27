@@ -1,13 +1,17 @@
+import { createTester } from "./util.js";
+
 const solution = msg => {
-    const [ct,tot] = msg.split(/\W/)
+    const [ct, tot] = msg.split(/\W/)
         .map(x => x.trim().length)
         .filter(x => x > 0)
-        .reduce(([ct,tot], n) => ([ct + 1, tot + n]), [0,0]);
+        .reduce(([ct, tot], n) => ([ct + 1, tot + n]), [0, 0]);
     return Math.round(((tot / ct) + Number.EPSILON) * 100) / 100;
 };
 
-const sentence1 = "Hi all, my name is Tom...I am originally from Australia.";
-const sentence2 = "I need to work very hard to learn more about algorithms in Python!";
-
-console.assert(solution(sentence1) == 3.82);
-console.assert(solution(sentence2) == 4.08);
+const tester = createTester("avg word len", solution);
+export const tests = [
+    tester("Hi all, my name is Tom...I am originally from Australia.",
+        3.82),
+    tester("I need to work very hard to learn more about algorithms in JavaScript!",
+        4.38)
+];

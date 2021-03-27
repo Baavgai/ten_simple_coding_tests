@@ -1,3 +1,5 @@
+import { createTester } from "./util.js";
+
 const solution = (a, b) => {
     if (b.length>a.length) {
         return solution(b,a);
@@ -14,7 +16,9 @@ const solution = (a, b) => {
     }
 };
 
-console.assert(solution('364','1836') === '2200');
-console.assert(solution('9','99') === '108');
-console.assert(solution('1', '9999999999999999999999999999999999999999999') === '10000000000000000000000000000000000000000000');
-
+const tester = createTester("add strings", solution);
+export const tests = [
+    tester(['364','1836'],'2200'),
+    tester(['9','99'], '108'),
+    tester(['1','9999999999999999999999999999999999999999999'], '10000000000000000000000000000000000000000000'),
+];

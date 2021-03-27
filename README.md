@@ -6,16 +6,53 @@ To solve with javascript.
 
 ## Helpers
 
+To do some tests in javascript, we'll need to compare array results.  In some cases, we want to just make sure all elements in an array are present, regardless of order.  Rather than using `console.assert`, test examples will use the following helper code.
+
+```javascript
+const testSolution = (name, solution, fargs, answer, isEqual = undefined) => {
+    const result = Array.isArray(fargs) ? solution(...fargs) : solution(fargs);
+    const pass = isEqual === undefined ? result === answer : isEqual(result, answer);
+    return { pass, name, args: fargs, result, answer };
+};
+
+export const createTester = (name, solution, isEqual = undefined) =>
+    (solutionArgs, answer) =>
+        () => testSolution(name, solution, solutionArgs, answer, isEqual);
+
+export const runTests = tests =>
+    tests
+        .map(f => f())
+        .forEach(({ pass, name, ...x }) => {
+            if (pass) {
+                console.log(`PASS: ${name} ${JSON.stringify(x)}`);
+            } else {
+                console.log(`FAIL: ${name} ${JSON.stringify(x)}`);
+            }
+        });
+
+export const compareArrays = (xs, ys, ordered = true) => {
+    if (xs.length !== ys.length) {
+        return false;
+    } else if (ordered) {
+        return JSON.stringify(xs) === JSON.stringify(ys);
+    } else {
+        return JSON.stringify(xs.sort()) === JSON.stringify(ys.sort());
+    }
+}
+```
+
 
 ## 1. Reverse Integer
 Given an integer, return the integer with reversed digits.
 
 Note: The integer could be either positive or negative.
 
-
 ```javascript
-console.assert(solution(-231) === -132);
-console.assert(solution(345) === 543);
+const tester = createTester("reverse int", solution);
+export const tests = [
+    tester(-231, -132),
+    tester(345, 543)
+];
 ```
 
 <details>
@@ -35,11 +72,11 @@ For a given sentence, return the average word length.
 Note: Remember to remove punctuation first.
 
 ```javascript
-const sentence1 = "Hi all, my name is Tom...I am originally from Australia.";
-const sentence2 = "I need to work very hard to learn more about algorithms in Python!";
-
-console.assert(solution(sentence1) == 3.82);
-console.assert(solution(sentence2) == 4.08);
+const tester = createTester("avg word len", solution);
+export const tests = [
+    tester("Hi all, my name is Tom...I am originally from Australia.", 3.82),
+    tester("I need to work very hard to learn more about algorithms in JavaScript!", 4.38)
+];
 ```
 
 <details>
@@ -63,9 +100,12 @@ Given two non-negative integers num1 and num2 represented as string, return the 
 You must **not** use any built-in BigInteger library or convert the inputs to integer directly.
 
 ```javascript
-console.assert(solution('364','1836') === '2200');
-console.assert(solution('9','99') === '108');
-console.assert(solution('1', '9999999999999999999999999999999999999999999') === '10000000000000000000000000000000000000000000');
+const tester = createTester("add strings", solution);
+export const tests = [
+    tester(['364','1836'],'2200'),
+    tester(['9','99'], '108'),
+    tester(['1','9999999999999999999999999999999999999999999'], '10000000000000000000000000000000000000000000'),
+];
 ```
 
 <details>
@@ -99,10 +139,13 @@ If it doesn't exist, return -1.
 *`Note: all the input strings are already lowercase.`*
 
 ```javascript
-[['alphabet',1], ['barbados',2], ['crunchy',1],['xxxxx',-1] ].forEach(([word, answer]) => {
-    console.assert(solution(word) === answer, word, answer);
-});
-
+const tester = createTester("first unique char", solution);
+export const tests = [
+    tester('alphabet', 1),
+    tester('barbados', 2),
+    tester('crunchy', 1),
+    tester('xxxxx', -1),
+];
 ```
 
 <details><summary>Solution</summary>
@@ -127,7 +170,12 @@ Given a non-empty string s, you may delete at most one character. Judge whether 
 The string will only contain lowercase characters a-z.
 
 ```javascript
-console.assert(solution('radkar') === true);
+const tester = createTester("palindrome", solution);
+export const tests = [
+    tester('radkar', true),
+    tester('alice', false),
+    tester('bob', true),
+];
 ```
 
 <details>
@@ -149,9 +197,12 @@ const solution = word => {
 Given an array of integers, determine whether the array is monotonic or not.
 
 ```javascript
-console.assert(solution([6,5,4,4]));
-console.assert(!solution([1,1,1,3,3,4,3,2,4,2]));
-console.assert(solution([1,1,2,3,7]));
+const tester = createTester("monotonic arr", solution);
+export const tests = [
+    tester([[6, 5, 4, 4]], true),
+    tester([[1, 1, 1, 3, 3, 4, 3, 2, 4, 2]], false),
+    tester([[1, 1, 2, 3, 7]], true),
+];
 ```
 
 <details>
@@ -170,11 +221,11 @@ const solution = xs =>
 Given an array nums, write a function to move all zeroes to the end of it while maintaining the relative order of the non-zero elements.
 
 ```javascript
-const arrayTest = (xs, ys) =>
-    console.assert(JSON.stringify(xs) === JSON.stringify(ys), xs, ys);
-
-arrayTest(solution([0, 1, 0, 3, 12]), [1, 3, 12, 0, 0]);
-arrayTest(solution([1,7,0,0,8,0,10,12,0,4]), [1, 7, 8, 10, 12, 4, 0, 0, 0, 0]);
+const tester = createTester("move zeros", solution, compareArrays);
+export const tests = [
+    tester([[0, 1, 0, 3, 12]], [1, 3, 12, 0, 0]),
+    tester([[1, 7, 0, 0, 8, 0, 10, 12, 0, 4]], [1, 7, 8, 10, 12, 4, 0, 0, 0, 0]),
+];
 ```
 
 <details>
@@ -194,10 +245,10 @@ const solution = xs => {
 Given an array containing `undefined` values fill in the `undefined` values with most recent `!undefined` value in the array
 
 ```javascript
-const arrayTest = (xs, ys) =>
-    console.assert(JSON.stringify(xs) === JSON.stringify(ys), xs, ys);
-
-arrayTest(solution([1, undefined, 2, 3, undefined, undefined, 5, undefined]), [1, 1, 2, 3, 3, 3, 5, 5]);
+const tester = createTester("fill blanks", solution, compareArrays);
+export const tests = [
+    tester([[1, undefined, 2, 3, undefined, undefined, 5, undefined]], [1, 1, 2, 3, 3, 3, 5, 5])
+];
 ```
 
 <details>
@@ -216,13 +267,17 @@ const solution = xs =>
 Given two sentences, return an array that has the words that appear in one sentence and not the other and an array with the words in common.
 
 ```javascript
-const [aIn, aOut] = solution(
-    'We are really pleased to meet you in our city',
-    'The city was hit by a really heavy storm'
-);
-
-assertArraysEqual(aIn, ['We', 'to', 'heavy', 'The', 'storm', 'meet', 'hit', 'pleased', 'are', 'by', 'a', 'in', 'was', 'you', 'our'], false);
-assertArraysEqual(aOut, ['really', 'city'], false);
+const tester = createTester("matched words", solution,
+    (xs, ys) => compareArrays(xs[0], ys[0], false) && compareArrays(xs[1], ys[1], false));
+export const tests = [
+    tester([
+        'We are really pleased to meet you in our city',
+        'The city was hit by a really heavy storm'
+    ], [
+        ['We', 'to', 'heavy', 'The', 'storm', 'meet', 'hit', 'pleased', 'are', 'by', 'a', 'in', 'was', 'you', 'our'],
+        ['really', 'city']
+    ])
+];
 ```
 
 <details>
@@ -246,13 +301,30 @@ Note: The task is to write a program to print all Prime numbers in an Interval.
 
 Definition: A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.
 
-```python
-assert solution(35) == [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31]
-```
+```javascript
+const tester = createTester("primes", solution, compareArrays);
+export const tests = [
+    tester(35, [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31])
+];
+``````
 
 <details>
 	<summary>Solution</summary>
 
 ```javascript
+const solution = n => {
+    const sieve = new Array(n + 1).fill(0);
+    const markOff = v => {
+        if (sieve[v] === 0) {
+            for(let i=v + v; i < n + 1; i += v) {
+                sieve[i] = 1;
+            }
+        }
+    };
+    for(let i=2; i<n + 1; i++) {
+        markOff(i);     
+    }
+    return sieve.map((x,i) => i < 2 ? undefined : (x === 0 ? i : undefined)).filter(x => x !== undefined);
+}
 ```
 </details>

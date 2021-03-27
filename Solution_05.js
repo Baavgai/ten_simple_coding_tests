@@ -1,3 +1,5 @@
+import { createTester } from "./util.js";
+
 const solution = word => {
     for(let h = 0, t = word.length - 1; h<t -1; h++, t--) {
         if (word[h]!==word[t]) { return false; }
@@ -5,4 +7,9 @@ const solution = word => {
     return true;
 };
 
-console.assert(solution('radkar'));
+const tester = createTester("palindrome", solution);
+export const tests = [
+    tester('radkar', true),
+    tester('alice', false),
+    tester('bob', true),
+];
